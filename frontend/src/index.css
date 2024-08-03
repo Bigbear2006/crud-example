@@ -1,0 +1,233 @@
+.item {
+    display: flex;
+    position: relative;
+    margin: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.item:hover {
+    transform: scale(101%);
+}
+
+.item img {
+    width: 10%;
+    height: 10%;
+    margin: 20px;
+    border-radius: 5px;
+}
+
+.item h2 {
+    margin-bottom: 0;
+}
+
+.item .edit-item-action {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    margin: 10px;
+}
+
+.loading {
+    align-items: center;
+    text-align: center;
+}
+
+.search {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.search input[type="text"] {
+    height: 30px;
+    width: 400px;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px;
+}
+
+button {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 8px;
+}
+
+button:hover {
+    transform: scale(97%);
+}
+
+.categories {
+    display: flex;
+    margin: auto;
+}
+
+.category {
+    display: flex;
+    margin: 20px;
+}
+
+.empty {
+    margin: auto;
+    text-align: center;
+    padding: 30px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+form.edit-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.edit-item textarea[name="description"], .create-item textarea[name="description"] {
+    resize: none;
+    width: 400px;
+    border: 2px solid black;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 5px;
+}
+
+.edit-item input, .create-item input {
+    margin: 10px 0;
+    padding-left: 5px;
+    height: 30px;
+    width: 400px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.edit-item__edit-image {
+    display: flex;
+    justify-content: center;
+}
+
+.edit-item__edit-image input[type="file"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.edit-image__actions {
+    display: flex;
+    flex-direction: column;
+}
+
+#delete-image, #delete-item {
+    background-color: red;
+    border: 2px solid red;
+}
+
+.create-item-modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    /*overflow: auto;*/
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+form.create-item {
+    /*top: 20%;*/
+    /*right: 35%;*/
+    /*bottom: 20%;*/
+    /*left: 35%;*/
+    position: relative;
+    margin: auto;
+    padding: 20px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: center;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+form.create-item button {
+    margin-left: 0;
+}
+
+.create-item .close-modal {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    margin: 5px;
+}
+
+#open-create-item-form {
+    margin-left: 20px;
+}
+
+.login-form, .register-form {
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.login-form input, .register-form input {
+    margin: 10px;
+    padding-left: 5px;
+    height: 30px;
+    width: 400px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+.header {
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: flex-start;
+    height: 50px;
+}
+
+
+.header__menu {
+    display: flex;
+    align-items: center;
+}
+
+.header__menu-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    margin: 5px;
+}
+
+.header__menu-item:hover {
+    background-color: #4d4d4d;
+}
+
+.profile {
+    position: relative;
+}
+
+.profile .logout {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    margin: 5px;
+}
