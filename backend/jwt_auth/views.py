@@ -82,6 +82,7 @@ class CheckEmailAPIView(APIView):
 class CheckUsernameAPIView(APIView):
     def get(self, request: Request):
         username = request.query_params.get('username')
+
         if username is None:
             return Response({'available': False}, 400)
         try:

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/'
+    baseURL: 'http://localhost/'
 })
 
 axiosInstance.interceptors.request.use(config => {
@@ -13,53 +13,90 @@ axiosInstance.interceptors.request.use(config => {
 })
 
 const ApiService = {
-    pageSize: 1,
+    pageSize: 10,
     refreshTokenTimeout: 60 * 1000,
 
+    // auth
     refreshToken() {
-        axiosInstance.post('jwt-auth/user/refresh-token/', {refresh: localStorage.getItem('refresh')})
+        let refresh = localStorage.getItem('refresh')
+        if (!refresh) {
+            return
+        }
+        axiosInstance.post('jwt-auth/user/refresh-token/', {refresh: refresh})
             .then(rsp => {
                 localStorage.setItem('access', rsp.data.access)
                 console.log('token refreshed')
             })
     },
 
-    // auth
-    login(data) {
+    checkUsername(username, setError) {
+        axiosInstance.get(`jwt-auth/user/check-username?username=${username}`)
+            .then(
+                () => {},
+                () => setError('username', {type: 'isAvailable', message: 'Это имя уже занято'})
+            )
+    },
+
+    checkEmail(email, setError) {
+        axiosInstance.get(`jwt-auth/user/check-email?email=${email}`)
+            .then(
+                () => {},
+                () => setError('email', {type: 'isAvailable', message: 'Это почта уже занята'})
+            )
+    },
+
+    login(data, setIsAuthenticated, navigate) {
         axiosInstance.post('jwt-auth/user/login/', data)
             .then(rsp => {
                 localStorage.setItem('access', rsp.data.access)
                 localStorage.setItem('refresh', rsp.data.refresh)
+                setIsAuthenticated(true)
+                navigate('/')
             })
     },
 
-    googleLogin(credential) {
+    googleLogin(credential, setIsAuthenticated, navigate) {
         axiosInstance.post('jwt-auth/user/login/google/', {token: credential})
                 .then(rsp => {
                     localStorage.setItem('access', rsp.data.access)
                     localStorage.setItem('refresh', rsp.data.refresh)
+                    setIsAuthenticated(true)
+                    navigate('/')
                 })
     },
 
-    register(data) {
+    register(data, setModalIsOpen) {
         axiosInstance.post('jwt-auth/user/register/', data)
-            .then(rsp => alert('Письмо для завершения регистрации отправлено на почту (проверьте папку спам)'))
+            .then(() => setModalIsOpen(true))
+        setModalIsOpen(true)
     },
 
-    verifyEmail(userId, token, navigate) {
-        axiosInstance.post(`jwt-auth/user/verify-email?user_id=${userId}&token=${token}`)
+    verifyEmail(userId, token, setIsLoading, setSatusIsSuccess) {
+        axiosInstance.get(`jwt-auth/user/verify-email?user_id=${userId}&token=${token}`)
             .then(
-                rsp => {
-                    alert('Авторизация успешно завершена! Войдите при помощи своей почти и пароля.')
-                    navigate('/login')
+                () => {
+                    setIsLoading(false)
+                    setSatusIsSuccess(true)
                 },
-                err => alert('Что-то пошло не так...')
+                () => {
+                    setIsLoading(false)
+                    setSatusIsSuccess(false)
+                }
             )
+
     },
 
     getUserInfo(setUserInfo) {
         axiosInstance.get('jwt-auth/user/info/')
             .then(rsp => setUserInfo(rsp.data))
+    },
+
+    checkUserIsAdmin(setIsAdmin) {
+        axiosInstance.get('jwt-auth/user/info/')
+            .then(
+                rsp => setIsAdmin(rsp.data.is_staff),
+                () => setIsAdmin(false)
+            )
     },
 
     // items
@@ -77,6 +114,7 @@ const ApiService = {
                 setItem(rsp.data)
                 setValue('title', rsp.data.title)
                 setValue('description', rsp.data.description)
+                setValue('categories', rsp.data.categories.map(elem => elem.id))
             })
     },
 
@@ -93,27 +131,40 @@ const ApiService = {
         formData.append('title', data.title)
         formData.append('image', data.image[0])
         formData.append('description', data.description)
+        data.categories.forEach(category => {
+            formData.append('categories', category)
+        })
 
         axiosInstance.post('api/items/', formData)
-            .then(rsp => setModalIsOpen(false))
+            .then(() => setModalIsOpen(false))
     },
 
     editItem(id, data, navigate) {
-        let {title, image, description} = data
         let formData = new FormData()
-
-        formData.append('title', title)
-        if (image.length !== 0) {formData.append('image', image[0])}
-        formData.append('description', description)
+        formData.append('title', data.title)
+        if (data.image.length !== 0) {formData.append('image', data.image[0])}
+        formData.append('description', data.description)
+        data.categories.forEach(category => {
+            formData.append('categories', category)
+        })
 
         axiosInstance.patch(`api/items/${id}/`, formData)
-            .then(rsp => navigate('/'))
+            .then(() => navigate('/'))
     },
 
     deleteItem(id, navigate) {
         axiosInstance.delete(`api/items/${id}/`)
-            .then(rsp => navigate('/'))
+            .then(() => navigate('/'))
     },
+
+    // categories
+    getCategories(setCategories, convert=false) {
+        axiosInstance.get('api/categories/')
+            .then(rsp => convert?
+                setCategories(rsp.data.map(elem => ({value: elem.id, label: elem.title}))):
+                setCategories(rsp.data)
+            )
+    }
 }
 
 export default ApiService;

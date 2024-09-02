@@ -6,6 +6,8 @@ class Item(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to='items', null=True, default='items/default.png')
     categories = models.ManyToManyField('Category', 'items', through='ItemCategory')
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects: models.Manager
 
     def __str__(self):
         return self.title
@@ -17,6 +19,8 @@ class Item(models.Model):
 class Category(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects: models.Manager
 
     def __str__(self):
         return self.title

@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 
-export default function Item({id, title, description, image, categories}) {
+export default function Item({id, title, description, image, categories, isAdmin}) {
     let navigate = useNavigate()
 
     return (
@@ -13,7 +13,7 @@ export default function Item({id, title, description, image, categories}) {
                     {categories.map((elem => <p key={elem.id}>{elem.title}</p>))}
                 </div>
             </div>
-            <div className="edit-item-action" onClick={() => navigate(`item/${id}/edit/`)}>Редактировать</div>
+            {isAdmin && <div className="edit-item-action" onClick={() => navigate(`item/${id}/edit/`)}>Редактировать</div>}
         </div>
     )
 }

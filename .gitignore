@@ -1,0 +1,5 @@
+/backend/db.sqlite3
+.env
+.idea
+/letsencrypt
+/static

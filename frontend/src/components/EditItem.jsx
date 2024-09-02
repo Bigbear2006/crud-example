@@ -1,7 +1,8 @@
 import {useParams, useNavigate} from "react-router-dom";
 import {useState, useEffect} from "react";
-import {useForm} from "react-hook-form";
+import {useForm, Controller} from "react-hook-form";
 import apiService from "../apiService";
+import Select from "react-select";
 
 
 
@@ -9,9 +10,13 @@ export default function EditItem() {
     let { id } = useParams()
     let navigate = useNavigate()
     let [item, setItem] = useState({})
-    const {register, handleSubmit, setValue} = useForm()
+    let [categories, setCategories] = useState([])
+    const {register, handleSubmit, setValue, control} = useForm()
 
-    useEffect(() => apiService.getItem(id, setItem, setValue), [])
+    useEffect(() => {
+        apiService.getItem(id, setItem, setValue)
+        apiService.getCategories(setCategories, true)
+    }, [])
 
     return(
         <form className="edit-item" onSubmit={handleSubmit(data => apiService.editItem(id, data, navigate))}>
@@ -25,7 +30,22 @@ export default function EditItem() {
                 </div>
             </div>
             <textarea name="description" rows="10" {...register('description')}/>
-
+            <Controller
+                name="categories"
+                control={control}
+                render={({field: {onChange, value, ref}})=> (
+                    <Select
+                        isMulti
+                        options={categories}
+                        defaultValue={[]}
+                        onChange={(selectedOptions) => {
+                            onChange(selectedOptions.map(option => option.value))
+                        }}
+                        value={value ? categories.filter(category => value.includes(category.value)): []}
+                        ref={ref}
+                    />
+                )}
+            />
             <div className="edit-item__actions">
                 <button type="submit" id="edit-item">Изменить</button>
                 <button type="button" id="delete-item" onClick={() => apiService.deleteItem(id, navigate)}>Удалить</button>

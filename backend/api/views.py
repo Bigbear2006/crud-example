@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
-from rest_framework.response import Response
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
 from . import models, serializers, paginators
 
@@ -15,7 +15,15 @@ class ItemViewSet(ModelViewSet):
         title = request.GET.get('title')
         categories = request.GET.get('categories')
 
-        data = models.Item.objects.filter(title__icontains=title) if title else models.Item.objects.all()
+        vector = SearchVector('title', weight='A') + SearchVector('description', weight='B')
+        query = SearchQuery(title)
+        rank = SearchRank(vector, query)
+
+        if title:
+            data = models.Item.objects.annotate(search=vector, rank=rank).filter(search=query).order_by('-rank')
+        else:
+            data = models.Item.objects.all()
+
         if categories:
             data = data.filter(categories__in=categories.split(','))
 

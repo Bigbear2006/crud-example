@@ -28,6 +28,14 @@
     margin: 10px;
 }
 
+.item__categories {
+    display: flex;
+}
+
+.item__categories p {
+    margin: 5px 5px 10px 0;
+}
+
 .loading {
     align-items: center;
     text-align: center;
@@ -134,13 +142,12 @@ form.edit-item {
 
 .create-item-modal {
     display: none;
-    position: absolute;
+    position: fixed;
     z-index: 1;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    /*overflow: auto;*/
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -228,6 +235,49 @@ form.create-item button {
 .profile .logout {
     position: absolute;
     top: 0;
-    right: 10px;
-    margin: 5px;
+    right: 20px;
+    margin: 20px;
+    font-size: 150%;
+}
+
+.user-info {
+    display: flex;
+}
+
+.user-info  * {
+    margin: 10px;
+}
+
+.error {
+    color: red;
+}
+
+.email-sent-modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.email-sent-modal__content {
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    display: flex;
+    position: relative;
+    margin: auto;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 50%;
+    font-size: 150%;
+}
+
+.link {
+    color: #445bef;
 }
