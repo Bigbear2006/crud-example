@@ -19,13 +19,17 @@ import Page403 from "./components/Page403";
 function App() {
     let [isAuthenticated, setIsAuthenticated] = useState(false)
     let [isAdmin, setIsAdmin] = useState(false)
+    let refresh = localStorage.getItem('refresh')
 
     useEffect(() => {
-        apiService.refreshToken()
+        apiService.refreshToken(setIsAuthenticated)
         apiService.checkUserIsAdmin(setIsAdmin)
-        let intervalId  = setInterval(apiService.refreshToken, apiService.refreshTokenTimeout)
+        let intervalId  = setInterval(
+            () => apiService.refreshToken(setIsAuthenticated),
+            apiService.refreshTokenTimeout
+        )
         return () => clearInterval(intervalId)
-    }, [localStorage.getItem('refresh')])
+    }, [refresh])
 
     return (
         <GoogleOAuthProvider clientId="551438836032-833uqtb7v7slvahb6j12hehcnuq357ec.apps.googleusercontent.com">
@@ -35,7 +39,7 @@ function App() {
                     <Routes>
                         <Route
                             path="/"
-                            element={<MainPage isAdmin={isAdmin}/>}
+                            element={<MainPage isAdmin={isAdmin} isAuthenticated={isAuthenticated}/>}
                         />
                         <Route
                             path="item/:id/edit/"
@@ -43,7 +47,7 @@ function App() {
                         />
                         <Route
                             path="profile/"
-                            element={<UserProfile setIsAuthenticated={setIsAuthenticated}/>}
+                            element={<UserProfile setIsAuthenticated={setIsAuthenticated} isAdmin={isAdmin}/>}
                         />
                         <Route
                             path="login/" element={<LoginPage setIsAuthenticated={setIsAuthenticated}/>}

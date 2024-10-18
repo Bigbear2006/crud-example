@@ -1,4 +1,5 @@
 from django.db import models
+from jwt_auth.models import User
 
 
 class Item(models.Model):
@@ -29,3 +30,11 @@ class Category(models.Model):
 class ItemCategory(models.Model):
     item = models.ForeignKey(Item, models.CASCADE)
     category = models.ForeignKey(Category, models.CASCADE)
+
+
+class SavedItem(models.Model):
+    item = models.ForeignKey(Item, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE)
+
+    class Meta:
+        db_table = 'api_saveditems'

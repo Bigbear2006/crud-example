@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: 'https://fvbit.ru/'
+    baseURL: 'http://localhost/'
 })
 
 axiosInstance.interceptors.request.use(config => {
@@ -17,7 +17,7 @@ const ApiService = {
     refreshTokenTimeout: 60 * 1000,
 
     // auth
-    refreshToken() {
+    refreshToken(setIsAuthenticated) {
         let refresh = localStorage.getItem('refresh')
         if (!refresh) {
             return
@@ -25,6 +25,7 @@ const ApiService = {
         axiosInstance.post('jwt-auth/user/refresh-token/', {refresh: refresh})
             .then(rsp => {
                 localStorage.setItem('access', rsp.data.access)
+                setIsAuthenticated(true)
                 console.log('token refreshed')
             })
     },
@@ -45,14 +46,14 @@ const ApiService = {
             )
     },
 
-    login(data, setIsAuthenticated, navigate) {
+    login(data, setIsAuthenticated, setError, navigate) {
         axiosInstance.post('jwt-auth/user/login/', data)
             .then(rsp => {
                 localStorage.setItem('access', rsp.data.access)
                 localStorage.setItem('refresh', rsp.data.refresh)
                 setIsAuthenticated(true)
                 navigate('/')
-            })
+            }, () => setError('email', {type: 'isValid', message: 'Неверная почта или пароль'}))
     },
 
     googleLogin(credential, setIsAuthenticated, navigate) {
@@ -67,8 +68,10 @@ const ApiService = {
 
     register(data, setModalIsOpen) {
         axiosInstance.post('jwt-auth/user/register/', data)
-            .then(() => setModalIsOpen(true))
-        setModalIsOpen(true)
+            .then(
+                () => setModalIsOpen(true),
+                () => {}
+            )
     },
 
     verifyEmail(userId, token, setIsLoading, setSatusIsSuccess) {
@@ -164,6 +167,32 @@ const ApiService = {
                 setCategories(rsp.data.map(elem => ({value: elem.id, label: elem.title}))):
                 setCategories(rsp.data)
             )
+    },
+
+    saveItem(id, callback) {
+        axiosInstance.post('api/saved/', {item: id})
+            .then(() => callback(id))
+    },
+
+    getSavedItems(setSaved) {
+        axiosInstance.get('api/saved/')
+            .then(
+                rsp => setSaved(rsp.data),
+                () => setSaved([])
+            )
+    },
+
+    getSavedItemsIds(setSaved) {
+        axiosInstance.get('api/saved/')
+            .then(
+                rsp => setSaved(rsp.data.map(elem => elem.id)),
+                () => setSaved([])
+            )
+    },
+
+    deleteSaved(id, callback) {
+        axiosInstance.delete(`api/saved/${id}/`)
+            .then(() => callback(id))
     }
 }
 

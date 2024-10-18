@@ -73,7 +73,7 @@ class CheckEmailAPIView(APIView):
         if email is None:
             return Response({'available': False}, 400)
         try:
-            models.User.objects.get(email=email)
+            models.User.objects.get(email=email, is_active=True)
             return Response({'available': False}, 400)
         except models.User.DoesNotExist:
             return Response({'available': True}, 200)
@@ -86,7 +86,7 @@ class CheckUsernameAPIView(APIView):
         if username is None:
             return Response({'available': False}, 400)
         try:
-            models.User.objects.get(username=username)
+            models.User.objects.get(username=username, is_active=True)
             return Response({'available': False}, 400)
         except models.User.DoesNotExist:
             return Response({'available': True}, 200)

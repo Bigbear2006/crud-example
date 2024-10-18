@@ -22,6 +22,12 @@ class UserSerializer(ModelSerializer):
         except User.DoesNotExist:
             pass
 
+        try:
+            user = User.objects.get(username=validated_data['username'], is_active=False)
+            user.delete()
+        except User.DoesNotExist:
+            pass
+
         return User.objects.create_user(
             validated_data.pop('username'),
             validated_data.pop('email'),

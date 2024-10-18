@@ -1,4 +1,6 @@
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.decorators import action
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 
@@ -31,6 +33,12 @@ class ItemViewSet(ModelViewSet):
         data = self.serializer_class(paginator.paginate_queryset(data, request), many=True, context={'request': request}).data
         return paginator.get_paginated_response(data)
 
+    @action(['DELETE'], True, 'saved')
+    def delete_saved(self, request, pk):
+        item = models.Item.objects.get(id=pk)
+        models.SavedItem.objects.get(item=item, user=request.user).delete()
+        return Response(status=204)
+
 
 class CategoryViewSet(ModelViewSet):
     queryset = models.Category.objects.all()
@@ -41,3 +49,14 @@ class ItemCategoryViewSet(ModelViewSet):
     queryset = models.ItemCategory.objects.all()
     serializer_class = serializers.ItemCategorySerializer
 
+
+class SavedItemViewSet(ModelViewSet):
+    serializer_class = serializers.SavedItemSerializer
+
+    def get_queryset(self):
+        return models.SavedItem.objects.filter(user=self.request.user)
+
+    def get_object(self):
+        print(self.kwargs['pk'])
+        item = models.Item.objects.get(id=self.kwargs['pk'])
+        return models.SavedItem.objects.get(item=item, user=self.request.user)

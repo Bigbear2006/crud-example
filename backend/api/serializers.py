@@ -14,6 +14,8 @@ class ItemSerializer(ModelSerializer):
     def to_representation(self, instance):
         data = super(ItemSerializer, self).to_representation(instance)
         data['categories'] = CategorySerializer(models.Category.objects.filter(id__in=data['categories']), many=True).data
+        data['saved_count'] = models.SavedItem.objects.filter(item=instance).count()
+
         if instance.image:
             data['image'] = self.context["request"].build_absolute_uri(instance.image.url)
         else:
@@ -45,3 +47,21 @@ class ItemCategorySerializer(ModelSerializer):
     class Meta:
         model = models.ItemCategory
         fields = '__all__'
+
+
+class SavedItemSerializer(ModelSerializer):
+    class Meta:
+        model = models.SavedItem
+        fields = ('item',)
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        try:
+            item = models.SavedItem.objects.get(item=validated_data['item'], user=user)
+            return item
+        except models.SavedItem.DoesNotExist:
+            validated_data['user'] = user
+            return super(SavedItemSerializer, self).create(validated_data)
+
+    def to_representation(self, instance):
+        return ItemSerializer(instance.item, context=self.context).data

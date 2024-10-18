@@ -5,7 +5,7 @@ import Pagination from "./Pagination";
 import {useState} from "react";
 import {NumberParam, StringParam, NumericArrayParam, useQueryParams, withDefault} from "use-query-params";
 
-export default function MainPage({isAdmin}) {
+export default function MainPage({isAdmin, isAuthenticated}) {
     let [searchParams, setSearchParams] = useQueryParams({
         page: withDefault(NumberParam, 1),
         title: withDefault(StringParam, ''),
@@ -30,6 +30,7 @@ export default function MainPage({isAdmin}) {
                 modalIsOpen={modalIsOpen}
                 setModalIsOpen={setModalIsOpen}
                 isAdmin={isAdmin}
+                isAuthenticated={isAuthenticated}
             />
             <Pagination page={searchParams.page} setPage={setPage} pagesCount={pagesCount}/>
         </>
